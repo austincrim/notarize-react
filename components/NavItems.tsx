@@ -6,7 +6,7 @@ export default function NavItems({ selectedNote }) {
     <ul className='flex flex-col space-y-8 text-center'>
       <li>
         <a
-          download={selectedNote.title}
+          download={selectedNote?.title}
           href={`data:text/plain;charset=utf-8,${encodeURIComponent(
             selectedNote?.content
           )}`}

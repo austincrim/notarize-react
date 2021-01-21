@@ -5,19 +5,20 @@ import Nav from '../components/Nav';
 import Button from '../components/Button';
 import NotePreview from '../components/NotePreview';
 import Note from '../components/Note';
+import type { Note as INote } from '../types/Note';
 import { useNotes } from '../components/context/NotesContext';
 
 export default function Home() {
-  const [notes, setNotes] = useNotes();
+  const [notes, setNotes]: [INote[], React.Dispatch<INote[]>] = useNotes();
 
   const [selectedNote, setSelectedNote] = React.useState(notes[0]);
   const [searchText, setSearchText] = React.useState('');
 
   React.useEffect(() => {
     if (!notes[0]) {
-      setSelectedNote({});
-    } else if (!notes.find((n) => n.id === selectedNote.id)) {
-      setSelectedNote({});
+      setSelectedNote(null);
+    } else if (!notes.find((n) => n.id === selectedNote?.id)) {
+      setSelectedNote(null);
     }
   }, [notes]);
 
@@ -63,7 +64,7 @@ export default function Home() {
                   {
                     id: uuid(),
                     title: 'New Note',
-                    dateEdited: new Date(),
+                    dateEdited: new Date().toISOString(),
                     content: '',
                   },
                 ])

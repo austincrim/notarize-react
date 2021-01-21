@@ -2,16 +2,28 @@ import * as React from 'react';
 import marked from 'marked';
 import Button from './Button';
 import { useNotes } from './context/NotesContext';
+import type {Note as INote} from '../types/Note'
 
 export default function Note({ note, index, ...props }) {
-  const displayDate = '01/20/2020';
+  const [displayDate, setDisplayDate] = React.useState(null);
+  React.useEffect(() => {
+    setDisplayDate(
+      new Date(note.dateEdited).toDateString() === new Date().toDateString()
+        ? new Date(note.dateEdited).toLocaleTimeString()
+        : new Date(note.dateEdited).toLocaleDateString()
+    );
+  }, [note]);
   const [editing, setEditing] = React.useState(false);
   const [notes, setNotes] = useNotes();
-  const [editedNote, setEditedNote] = React.useState({ ...note });
+  const [editedNote, setEditedNote]: [INote, React.Dispatch<INote>] = React.useState({ ...note });
 
   React.useEffect(() => {
     setEditedNote({ ...note });
   }, [note]);
+
+  React.useEffect(() => {
+    setEditedNote({ ...editedNote, dateEdited: new Date().toISOString() });
+  }, [editedNote.content, editedNote.title])
 
   return (
     <>
@@ -24,6 +36,9 @@ export default function Note({ note, index, ...props }) {
               <input
                 className='p-2 bg-gray-100 rounded focus:ring'
                 defaultValue={note.title}
+                onChange={(e) =>
+                  setEditedNote({ ...editedNote, title: e.target.value })
+                }
               />
             )}
 
@@ -37,10 +52,8 @@ export default function Note({ note, index, ...props }) {
                 <Button
                   onClick={() => {
                     setEditing(false);
-                    setEditedNote({ ...editedNote, dateEdited: new Date() });
                     let newNotes = [...notes];
                     newNotes[index] = { ...editedNote };
-                    console.log('new notes', newNotes);
                     setNotes([...newNotes]);
                   }}
                   type='primary'

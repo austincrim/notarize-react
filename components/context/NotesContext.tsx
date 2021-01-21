@@ -11,7 +11,7 @@ export function NotesProvider(props) {
       id: uuid(),
       title: 'My First Note!',
       content: 'Enter some Markdown here!',
-      dateEdited: new Date(),
+      dateEdited: new Date().toISOString(),
     },
   ]);
   return <NotesContext.Provider value={[notes, setNotes]} {...props} />;

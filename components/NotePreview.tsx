@@ -1,8 +1,23 @@
+import * as React from 'react';
 import { Note } from '../types/Note';
+import type { Note as INote } from '../types/Note';
 import { useNotes } from './context/NotesContext';
 
-function NotePreview({ note, isSelected, ...props }) {
-  const displayDate = '01/20/2020';
+interface NotePreviewProps {
+  note: INote;
+  isSelected: boolean;
+}
+
+function NotePreview({ note, isSelected, ...props }: NotePreviewProps) {
+  const [displayDate, setDisplayDate] = React.useState(null);
+  React.useEffect(() => {
+    setDisplayDate(
+      new Date(note.dateEdited).toDateString() === new Date().toDateString()
+        ? new Date(note.dateEdited).toLocaleTimeString()
+        : new Date(note.dateEdited).toLocaleDateString()
+    );
+  }, [note]);
+
   const [notes, setNotes] = useNotes();
 
   return (
@@ -47,4 +62,4 @@ function NotePreview({ note, isSelected, ...props }) {
   );
 }
 
-export default NotePreview
+export default NotePreview;
