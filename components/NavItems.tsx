@@ -11,12 +11,12 @@ export default function NavItems({ selectedNote }) {
             selectedNote?.content
           )}`}
         >
-          <Button type='primary' className='w-full'>Download Note</Button>
+          <Button tabIndex={-1} type='primary' className='w-full'>Download Note</Button>
         </a>
       </li>
       <li>
         <a href='https://github.com/austincrim/notarize'>
-          <Button className='flex items-center w-full' type='dark'>
+          <Button tabIndex={-1} className='flex items-center w-full' type='dark'>
             <Image
               width='32'
               height='32'

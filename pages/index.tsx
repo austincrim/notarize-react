@@ -2,6 +2,7 @@ import * as React from 'react';
 import Head from 'next/head';
 import { v4 as uuid } from 'uuid';
 import Nav from '../components/Nav';
+import MobileNav from '../components/MobileNav';
 import Button from '../components/Button';
 import NotePreview from '../components/NotePreview';
 import Note from '../components/Note';
@@ -25,10 +26,10 @@ export default function Home() {
   return (
     <div>
       <Head>
-        <title>Create Next App</title>
+        <title>Notarize</title>
       </Head>
       <main>
-        {/* <MobileNav {selectedNote} /> */}
+        <MobileNav selectedNote={selectedNote} />
         <div className='grid min-h-screen grid-cols-1 p-8 lg:grid-cols-4 lg:gap-4'>
           <ul className='row-start-3 space-y-4 lg:pr-8 lg:row-start-auto lg:border-r'>
             <label htmlFor='searchNotes' className='sr-only'>

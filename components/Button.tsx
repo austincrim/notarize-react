@@ -7,6 +7,7 @@ interface ButtonProps {
   className?: string;
   id?: NativeButtonProps['id'];
   onClick?: NativeButtonProps['onClick'];
+  tabIndex?: NativeButtonProps['tabIndex']
 }
 
 export default function Button({

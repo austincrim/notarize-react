@@ -3,12 +3,7 @@ import { Note } from '../types/Note';
 import type { Note as INote } from '../types/Note';
 import { useNotes } from './context/NotesContext';
 
-interface NotePreviewProps {
-  note: INote;
-  isSelected: boolean;
-}
-
-function NotePreview({ note, isSelected, ...props }: NotePreviewProps) {
+function NotePreview({ note, isSelected, ...props }) {
   const [displayDate, setDisplayDate] = React.useState(null);
   React.useEffect(() => {
     setDisplayDate(
