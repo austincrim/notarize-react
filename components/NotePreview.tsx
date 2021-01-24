@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Note } from '../types/Note';
 import type { Note as INote } from '../types/Note';
-import { useNotes } from './context/NotesContext';
+import Head from 'next/head';
+// import { useNotes } from './context/NotesContext';
 
 function NotePreview({ note, isSelected, ...props }) {
   const [displayDate, setDisplayDate] = React.useState(null);
@@ -13,7 +14,7 @@ function NotePreview({ note, isSelected, ...props }) {
     );
   }, [note]);
 
-  const [notes, setNotes] = useNotes();
+  // const [notes, setNotes] = useNotes();
 
   return (
     <li
@@ -30,9 +31,11 @@ function NotePreview({ note, isSelected, ...props }) {
         className='focus:ring ring-red-500'
         onClick={(e) => {
           e.stopPropagation();
-          setNotes((current: Note[]) =>
-            current.filter((n) => n.id !== note.id)
-          );
+          fetch('/api/notes', {
+            method: 'DELETE',
+            body: JSON.stringify({ id: note.id }),
+            headers: { 'Content-Type': 'application/json' },
+          });
         }}
       >
         <svg

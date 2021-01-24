@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Head from 'next/head';
-import { v4 as uuid } from 'uuid';
 import Nav from '../components/Nav';
 import MobileNav from '../components/MobileNav';
 import Button from '../components/Button';
@@ -8,9 +7,11 @@ import NotePreview from '../components/NotePreview';
 import Note from '../components/Note';
 import type { Note as INote } from '../types/Note';
 import { useNotes } from '../components/context/NotesContext';
+import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+import prisma from '../lib/prisma';
 
-export default function Home() {
-  const [notes, setNotes]: [INote[], React.Dispatch<INote[]>] = useNotes();
+export default function Home({ notes }) {
+  // const [notes, setNotes]: [INote[], React.Dispatch<INote[]>] = useNotes();
 
   const [selectedNote, setSelectedNote] = React.useState(notes[0]);
   const [searchText, setSearchText] = React.useState('');
@@ -60,15 +61,16 @@ export default function Home() {
               type='primary'
               className='flex items-center justify-center w-full'
               onClick={() =>
-                setNotes([
-                  ...notes,
-                  {
-                    id: uuid(),
+                fetch('/api/notes', {
+                  body: JSON.stringify({
                     title: 'New Note',
-                    dateEdited: new Date().toISOString(),
-                    content: '',
+                    content: 'Put Markdown here!',
+                  }),
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
                   },
-                ])
+                })
               }
             >
               <svg
@@ -111,4 +113,10 @@ export default function Home() {
       </main>
     </div>
   );
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const notes = await prisma.note.findMany({});
+  // NextJS cannot automatically parse the postgres DateTime type
+  return { props: { notes: JSON.parse(JSON.stringify(notes)) } };
 }

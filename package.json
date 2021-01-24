@@ -8,7 +8,9 @@
     "start": "next start"
   },
   "dependencies": {
+    "@prisma/client": "^2.15.0",
     "@tailwindcss/typography": "^0.4.0",
+    "firebase": "^8.2.4",
     "marked": "^1.2.7",
     "next": "10.0.5",
     "react": "17.0.1",
@@ -16,6 +18,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@prisma/cli": "^2.15.0",
     "@types/node": "^14.14.22",
     "@types/react": "^17.0.0",
     "@types/uuid": "^8.3.0",
