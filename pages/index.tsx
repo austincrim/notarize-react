@@ -8,28 +8,12 @@ import MobileNav from '../components/MobileNav';
 import Button from '../components/Button';
 import NotePreview from '../components/NotePreview';
 import Note from '../components/Note';
-
-async function addNote() {
-  fetch('/api/notes', {
-    body: JSON.stringify({
-      title: 'New Note',
-      content: 'Put Markdown here!',
-    }),
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-}
+import Spinner from '../components/Spinner';
 
 export default function Home() {
   const [searchText, setSearchText] = React.useState('');
-  const [selectedNote, setSelectedNote] = React.useState();
-  const { notes } = useNotes();
-  const queryClient = useQueryClient();
-  const addMutation = useMutation(addNote, {
-    onSuccess: () => queryClient.invalidateQueries('/notes'),
-  });
+  const { notes, addMutation } = useNotes();
+  const [selectedNote, setSelectedNote] = React.useState(null);
   const [session] = useSession();
 
   React.useEffect(() => {
@@ -77,34 +61,35 @@ export default function Home() {
             <Button
               disabled={!session}
               type='primary'
-              className='flex items-center justify-center w-full'
+              className='flex justify-center w-full'
               onClick={() => addMutation.mutate()}
             >
-              <svg
-                className='w-6 h-6'
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth='2'
-                  d='M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-                />
-              </svg>
-              Add Note
+              {addMutation.status !== 'loading' ? (
+                <span className='flex items-center justify-center'>
+                  <svg
+                    className='w-6 h-6'
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth='2'
+                      d='M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+                    />
+                  </svg>
+                  Add Note
+                </span>
+              ) : (
+                <Spinner />
+              )}
             </Button>
           </ul>
           <div className='px-4 lg:col-span-2'>
             {session && selectedNote ? (
-              <Note
-                note={notes.find((n) => n.id === selectedNote.id)}
-                index={notes.indexOf(
-                  notes.find((n) => n.id === selectedNote.id)
-                )}
-              />
+              <Note note={notes.find((n) => n.id === selectedNote.id)} />
             ) : session && !selectedNote ? (
               <React.Fragment />
             ) : (

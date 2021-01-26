@@ -1,10 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from 'next-auth/client';
-import getPrismaClient from '../../lib/prisma';
+import prisma from '../../lib/prisma';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getSession({ req });
-  const prisma = getPrismaClient();
 
   if (!session) {
     return res.status(401).json({ message: 'Unauthenticated request' });
@@ -30,6 +29,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       });
       break;
 
+    case 'PUT':
+      const data = req.body;
+      result = await prisma.note.update({
+        where: {
+          id: data.id,
+        },
+        data,
+      });
+      break;
     case 'DELETE':
       const { id } = req.body;
       result = await prisma.note.delete({

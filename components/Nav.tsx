@@ -1,10 +1,10 @@
-import * as React from 'react'
+import * as React from 'react';
 import Image from 'next/image';
 import { useSession } from 'next-auth/client';
 import NavItems from './NavItems';
 
 export default function Nav({ selectedNote }) {
-  const [session, loading] = useSession();
+  const [session] = useSession();
   return (
     <div className='hidden px-4 lg:items-center lg:flex lg:flex-col lg:space-y-20'>
       <div className='flex items-center justify-center'>
@@ -30,11 +30,11 @@ export default function Nav({ selectedNote }) {
         <div className='flex items-center space-x-3'>
           <Image
             className='rounded-full'
-            width='50'
-            height='50'
+            width='60'
+            height='60'
             src={session.user.image}
           />
-          <span className='text-lg text-gray-700'>{session?.user.name}</span>
+          <span className='text-xl text-gray-700'>{session.user.name}</span>
         </div>
       ) : (
         <React.Fragment />
