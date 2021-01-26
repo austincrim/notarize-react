@@ -1,21 +1,23 @@
 import * as React from 'react';
 import Head from 'next/head';
-import { v4 as uuid } from 'uuid';
+import { useSession } from 'next-auth/client';
+import { useMutation, useQueryClient } from 'react-query';
+import { useNotes } from '../components/hooks';
 import Nav from '../components/Nav';
 import MobileNav from '../components/MobileNav';
 import Button from '../components/Button';
 import NotePreview from '../components/NotePreview';
 import Note from '../components/Note';
-import type { Note as INote } from '../types/Note';
-import { useNotes } from '../components/context/NotesContext';
+import Spinner from '../components/Spinner';
 
 export default function Home() {
-  const [notes, setNotes]: [INote[], React.Dispatch<INote[]>] = useNotes();
-
-  const [selectedNote, setSelectedNote] = React.useState(notes[0]);
   const [searchText, setSearchText] = React.useState('');
+  const { notes, addMutation } = useNotes();
+  const [selectedNote, setSelectedNote] = React.useState(null);
+  const [session] = useSession();
 
   React.useEffect(() => {
+    if (!notes) return;
     if (!notes[0]) {
       setSelectedNote(null);
     } else if (!notes.find((n) => n.id === selectedNote?.id)) {
@@ -57,47 +59,43 @@ export default function Home() {
               <li>No notes yet!</li>
             )}
             <Button
+              disabled={!session}
               type='primary'
-              className='flex items-center justify-center w-full'
-              onClick={() =>
-                setNotes([
-                  ...notes,
-                  {
-                    id: uuid(),
-                    title: 'New Note',
-                    dateEdited: new Date().toISOString(),
-                    content: '',
-                  },
-                ])
-              }
+              className='flex justify-center w-full'
+              onClick={() => addMutation.mutate()}
             >
-              <svg
-                className='w-6 h-6'
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth='2'
-                  d='M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-                />
-              </svg>
-              Add Note
+              {addMutation.status !== 'loading' ? (
+                <span className='flex items-center justify-center'>
+                  <svg
+                    className='w-6 h-6'
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth='2'
+                      d='M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+                    />
+                  </svg>
+                  Add Note
+                </span>
+              ) : (
+                <Spinner />
+              )}
             </Button>
           </ul>
           <div className='px-4 lg:col-span-2'>
-            {selectedNote ? (
-              <Note
-                note={notes.find((n) => n.id === selectedNote.id)}
-                index={notes.indexOf(
-                  notes.find((n) => n.id === selectedNote.id)
-                )}
-              />
-            ) : (
+            {session && selectedNote ? (
+              <Note note={notes.find((n) => n.id === selectedNote.id)} />
+            ) : session && !selectedNote ? (
               <React.Fragment />
+            ) : (
+              <div className='mt-10 text-2xl text-center'>
+                Sign in to view and edit your notes!
+              </div>
             )}
           </div>
 

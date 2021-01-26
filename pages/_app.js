@@ -1,11 +1,16 @@
 import '../styles/globals.css';
-import { NotesProvider } from '../components/context/NotesContext';
+import { Provider } from 'next-auth/client';
+import { QueryClient, QueryClientProvider } from 'react-query';
+
+const client = new QueryClient();
 
 function MyApp({ Component, pageProps }) {
   return (
-    <NotesProvider>
-      <Component {...pageProps} />
-    </NotesProvider>
+    <QueryClientProvider client={client}>
+      <Provider session={pageProps.session}>
+        <Component {...pageProps} />
+      </Provider>
+    </QueryClientProvider>
   );
 }
 

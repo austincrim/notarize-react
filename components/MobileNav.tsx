@@ -1,9 +1,12 @@
 import * as React from 'react';
-import { Recoverable } from 'repl';
+import Image from 'next/image';
 import NavItems from './NavItems';
+import { useSession } from 'next-auth/client';
 
 export default function MobileNav({ selectedNote }) {
   const [expanded, setExpanded] = React.useState(false);
+  const [session, loading] = useSession();
+
   return (
     <nav className='flex items-center justify-between w-full h-20 p-10 shadow-lg lg:hidden'>
       <div className='flex items-center justify-center'>
@@ -25,7 +28,20 @@ export default function MobileNav({ selectedNote }) {
           Notarize
         </h1>
       </div>
-      <div>
+      <div className='flex items-center justify-between space-x-10'>
+        {session ? (
+          <div className='flex items-center space-x-3'>
+            <Image
+              className='rounded-full'
+              width='50'
+              height='50'
+              src={session.user.image}
+            />
+            <span className='text-lg text-gray-700'>{session?.user.name}</span>
+          </div>
+        ) : (
+          <React.Fragment />
+        )}
         <button className='focus:ring' onClick={() => setExpanded(!expanded)}>
           <svg
             className='w-8 h-8 text-gray-400'
@@ -44,10 +60,7 @@ export default function MobileNav({ selectedNote }) {
         </button>
       </div>
       {expanded ? (
-        <div
-          // transition:scale={{ start: 0.75, duration: 200, opacity: 0.75 }}
-          className='absolute z-10 p-6 bg-white border rounded-lg shadow-lg right-4 top-14'
-        >
+        <div className='absolute z-10 p-6 bg-white border rounded-lg shadow-lg right-4 top-16'>
           <ul className='flex flex-col justify-around space-y-4'>
             <NavItems selectedNote={selectedNote} />
           </ul>
@@ -57,7 +70,6 @@ export default function MobileNav({ selectedNote }) {
       )}
       {expanded ? (
         <div
-          // transition:fade={{ duration: 200 }}
           onClick={() => setExpanded(false)}
           className='absolute inset-0 bg-gray-200 opacity-50'
         />

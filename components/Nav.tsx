@@ -1,8 +1,12 @@
+import * as React from 'react';
+import Image from 'next/image';
+import { useSession } from 'next-auth/client';
 import NavItems from './NavItems';
 
 export default function Nav({ selectedNote }) {
+  const [session] = useSession();
   return (
-    <div className='items-center hidden px-4 lg:flex lg:flex-col'>
+    <div className='hidden px-4 lg:items-center lg:flex lg:flex-col lg:space-y-20'>
       <div className='flex items-center justify-center'>
         <svg
           className='mr-2 text-green-400 xl:h-14 xl:w-14 lg:h-12 lg:w-12'
@@ -22,8 +26,21 @@ export default function Nav({ selectedNote }) {
           Notarize
         </h1>
       </div>
+      {session ? (
+        <div className='flex items-center space-x-3'>
+          <Image
+            className='rounded-full'
+            width='60'
+            height='60'
+            src={session.user.image}
+          />
+          <span className='text-xl text-gray-700'>{session.user.name}</span>
+        </div>
+      ) : (
+        <React.Fragment />
+      )}
       <nav className='mt-10'>
-          <NavItems selectedNote={selectedNote} />
+        <NavItems selectedNote={selectedNote} />
       </nav>
     </div>
   );

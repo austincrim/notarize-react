@@ -8,6 +8,7 @@ interface ButtonProps {
   id?: NativeButtonProps['id'];
   onClick?: NativeButtonProps['onClick'];
   tabIndex?: NativeButtonProps['tabIndex']
+  disabled?: NativeButtonProps['disabled']
 }
 
 export default function Button({
@@ -16,6 +17,7 @@ export default function Button({
   children,
   id,
   onClick,
+  disabled = false,
   ...props
 }: ButtonProps) {
   let styles =
@@ -45,10 +47,11 @@ export default function Button({
       break;
   }
 
+  if (disabled) styles = 'px-4 py-2 rounded bg-gray-300 cursor-not-allowed '
   if (className) styles += className;
 
   return (
-    <button {...props} id={id} onClick={onClick} className={styles}>
+    <button {...props} disabled={disabled} id={id} onClick={onClick} className={styles}>
       {children}
     </button>
   );

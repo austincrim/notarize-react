@@ -1,29 +1,27 @@
 import * as React from 'react';
 import marked from 'marked';
 import Button from './Button';
-import { useNotes } from './context/NotesContext';
-import type {Note as INote} from '../types/Note'
+import { useNotes } from './hooks';
 
-export default function Note({ note, index, ...props }) {
+export default function Note({ note, ...props }) {
   const [displayDate, setDisplayDate] = React.useState(null);
+  const [editing, setEditing] = React.useState(false);
+  const [editedNote, setEditedNote] = React.useState({ ...note });
+  const { saveMutation } = useNotes();
+
   React.useEffect(() => {
+    if (!note) return
     setDisplayDate(
       new Date(note.dateEdited).toDateString() === new Date().toDateString()
         ? new Date(note.dateEdited).toLocaleTimeString()
         : new Date(note.dateEdited).toLocaleDateString()
     );
-  }, [note]);
-  const [editing, setEditing] = React.useState(false);
-  const [notes, setNotes] = useNotes();
-  const [editedNote, setEditedNote]: [INote, React.Dispatch<INote>] = React.useState({ ...note });
-
-  React.useEffect(() => {
     setEditedNote({ ...note });
   }, [note]);
 
   React.useEffect(() => {
     setEditedNote({ ...editedNote, dateEdited: new Date().toISOString() });
-  }, [editedNote.content, editedNote.title])
+  }, [editedNote.content, editedNote.title]);
 
   return (
     <>
@@ -52,9 +50,7 @@ export default function Note({ note, index, ...props }) {
                 <Button
                   onClick={() => {
                     setEditing(false);
-                    let newNotes = [...notes];
-                    newNotes[index] = { ...editedNote };
-                    setNotes([...newNotes]);
+                    saveMutation.mutate(editedNote)
                   }}
                   type='primary'
                 >
@@ -80,7 +76,7 @@ export default function Note({ note, index, ...props }) {
           onChange={(e) =>
             setEditedNote({ ...editedNote, content: e.target.value })
           }
-          className='min-w-full min-h-screen p-2 mt-10 bg-gray-100 rounded focus:ring'
+          className='min-w-full p-2 mt-10 overflow-y-auto bg-gray-100 rounded h-3/4 focus:ring'
         />
       ) : (
         note && (
