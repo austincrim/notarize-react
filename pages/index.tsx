@@ -1,30 +1,39 @@
 import * as React from 'react';
 import Head from 'next/head';
 import { useSession } from 'next-auth/client';
+import { useMutation, useQueryClient } from 'react-query';
+import { useNotes } from '../components/hooks';
 import Nav from '../components/Nav';
 import MobileNav from '../components/MobileNav';
 import Button from '../components/Button';
 import NotePreview from '../components/NotePreview';
 import Note from '../components/Note';
 
+async function addNote() {
+  fetch('/api/notes', {
+    body: JSON.stringify({
+      title: 'New Note',
+      content: 'Put Markdown here!',
+    }),
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
 export default function Home() {
   const [searchText, setSearchText] = React.useState('');
-  const [notes, setNotes] = React.useState([]);
   const [selectedNote, setSelectedNote] = React.useState();
+  const { notes } = useNotes();
+  const queryClient = useQueryClient();
+  const addMutation = useMutation(addNote, {
+    onSuccess: () => queryClient.invalidateQueries('/notes'),
+  });
   const [session] = useSession();
 
   React.useEffect(() => {
-    async function getNotes() {
-      const result = await fetch('/api/notes');
-      if (result.ok) {
-        setNotes(await result.json());
-        setSelectedNote(notes[0]);
-      }
-    }
-    getNotes();
-  }, []);
-
-  React.useEffect(() => {
+    if (!notes) return;
     if (!notes[0]) {
       setSelectedNote(null);
     } else if (!notes.find((n) => n.id === selectedNote?.id)) {
@@ -69,18 +78,7 @@ export default function Home() {
               disabled={!session}
               type='primary'
               className='flex items-center justify-center w-full'
-              onClick={() =>
-                fetch('/api/notes', {
-                  body: JSON.stringify({
-                    title: 'New Note',
-                    content: 'Put Markdown here!',
-                  }),
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                })
-              }
+              onClick={() => addMutation.mutate()}
             >
               <svg
                 className='w-6 h-6'
@@ -100,15 +98,19 @@ export default function Home() {
             </Button>
           </ul>
           <div className='px-4 lg:col-span-2'>
-            {(selectedNote && session) ? (
+            {session && selectedNote ? (
               <Note
                 note={notes.find((n) => n.id === selectedNote.id)}
                 index={notes.indexOf(
                   notes.find((n) => n.id === selectedNote.id)
                 )}
               />
+            ) : session && !selectedNote ? (
+              <React.Fragment />
             ) : (
-              <div className='mt-10 text-2xl text-center'>Sign in to view and edit your notes!</div>
+              <div className='mt-10 text-2xl text-center'>
+                Sign in to view and edit your notes!
+              </div>
             )}
           </div>
 

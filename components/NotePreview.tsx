@@ -1,10 +1,23 @@
 import * as React from 'react';
-import { Note } from '../types/Note';
-import type { Note as INote } from '../types/Note';
-import Head from 'next/head';
+import { useMutation, useQueryClient } from 'react-query';
+
+async function deleteNote(id) {
+  await fetch('/api/notes', {
+    body: JSON.stringify({ id }),
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
 
 function NotePreview({ note, isSelected, ...props }) {
   const [displayDate, setDisplayDate] = React.useState(null);
+  const queryClient = useQueryClient();
+  const mutation = useMutation(deleteNote, {
+    onSuccess: () => queryClient.invalidateQueries('/notes'),
+  });
+
   React.useEffect(() => {
     setDisplayDate(
       new Date(note.dateEdited).toDateString() === new Date().toDateString()
@@ -12,7 +25,6 @@ function NotePreview({ note, isSelected, ...props }) {
         : new Date(note.dateEdited).toLocaleDateString()
     );
   }, [note]);
-
 
   return (
     <li
@@ -29,11 +41,7 @@ function NotePreview({ note, isSelected, ...props }) {
         className='focus:ring ring-red-500'
         onClick={(e) => {
           e.stopPropagation();
-          fetch('/api/notes', {
-            method: 'DELETE',
-            body: JSON.stringify({ id: note.id }),
-            headers: { 'Content-Type': 'application/json' },
-          });
+          mutation.mutate(note.id);
         }}
       >
         <svg

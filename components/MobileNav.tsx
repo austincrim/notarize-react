@@ -31,7 +31,12 @@ export default function MobileNav({ selectedNote }) {
       <div className='flex items-center justify-between space-x-10'>
         {session ? (
           <div className='flex items-center space-x-3'>
-            <Image className='rounded-full' width='50' height='50' src={session.user.image} />
+            <Image
+              className='rounded-full'
+              width='50'
+              height='50'
+              src={session.user.image}
+            />
             <span className='text-lg text-gray-700'>{session?.user.name}</span>
           </div>
         ) : (
@@ -55,7 +60,7 @@ export default function MobileNav({ selectedNote }) {
         </button>
       </div>
       {expanded ? (
-        <div className='absolute z-10 p-6 bg-white border rounded-lg shadow-lg right-4 top-14'>
+        <div className='absolute z-10 p-6 bg-white border rounded-lg shadow-lg right-4 top-16'>
           <ul className='flex flex-col justify-around space-y-4'>
             <NavItems selectedNote={selectedNote} />
           </ul>

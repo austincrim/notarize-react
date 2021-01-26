@@ -39,7 +39,6 @@ export default function NavItems({ selectedNote }) {
         <li>
           <Button
             onClick={() => {
-              console.log('clicked');
               signIn();
             }}
             className='w-full'
