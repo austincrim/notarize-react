@@ -1,14 +1,11 @@
 import '../styles/globals.css';
-import { NotesProvider } from '../components/context/NotesContext';
-import { AuthProvider } from '../lib/auth';
+import { Provider } from 'next-auth/client';
 
 function MyApp({ Component, pageProps }) {
   return (
-    <AuthProvider>
-      <NotesProvider>
-        <Component {...pageProps} />
-      </NotesProvider>
-    </AuthProvider>
+    <Provider session={pageProps.session}>
+      <Component {...pageProps} />
+    </Provider>
   );
 }
 

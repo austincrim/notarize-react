@@ -1,26 +1,45 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getSession } from 'next-auth/client';
 import prisma from '../../lib/prisma';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === 'POST') {
-    const { title, content } = req.body;
-    const result = await prisma.note.create({
-      data: {
-        title,
-        content,
-      },
-    });
-    res.json(result);
-  } else if (req.method === 'DELETE') {
-    const { id } = req.body;
-    console.log(id);
-    const result = await prisma.note.delete({
-      where: {
-        id: id,
-      },
-    });
-    res.json(result)
-  } else {
-    res.status(404)
+  const session = await getSession({ req });
+  if (!session) {
+    return res.status(403).json({message: 'Unauthenticated request'});
   }
+  let result = null;
+  switch (req.method) {
+    case 'GET':
+      result = await prisma.note.findMany({
+        where: {
+          author: { email: session?.user.email },
+        },
+      });
+      break;
+
+    case 'POST':
+      const { title, content } = req.body;
+      result = await prisma.note.create({
+        data: {
+          title,
+          content,
+          author: { connect: { email: session?.user.email } },
+        },
+      });
+      break;
+
+    case 'DELETE':
+      const { id } = req.body;
+      result = await prisma.note.delete({
+        where: {
+          id: id,
+        },
+      });
+      break;
+
+    default:
+      res.status(404);
+      break;
+  }
+  return res.json(result);
 };

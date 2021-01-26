@@ -1,20 +1,28 @@
 import * as React from 'react';
 import Head from 'next/head';
+import { useSession } from 'next-auth/client';
 import Nav from '../components/Nav';
 import MobileNav from '../components/MobileNav';
 import Button from '../components/Button';
 import NotePreview from '../components/NotePreview';
 import Note from '../components/Note';
-import type { Note as INote } from '../types/Note';
-import { useNotes } from '../components/context/NotesContext';
-import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import prisma from '../lib/prisma';
 
-export default function Home({ notes }) {
-  // const [notes, setNotes]: [INote[], React.Dispatch<INote[]>] = useNotes();
-
-  const [selectedNote, setSelectedNote] = React.useState(notes[0]);
+export default function Home() {
   const [searchText, setSearchText] = React.useState('');
+  const [notes, setNotes] = React.useState([]);
+  const [selectedNote, setSelectedNote] = React.useState();
+  const [session] = useSession();
+
+  React.useEffect(() => {
+    async function getNotes() {
+      const result = await fetch('/api/notes');
+      if (result.ok) {
+        setNotes(await result.json());
+        setSelectedNote(notes[0]);
+      }
+    }
+    getNotes();
+  }, []);
 
   React.useEffect(() => {
     if (!notes[0]) {
@@ -58,6 +66,7 @@ export default function Home({ notes }) {
               <li>No notes yet!</li>
             )}
             <Button
+              disabled={!session}
               type='primary'
               className='flex items-center justify-center w-full'
               onClick={() =>
@@ -91,7 +100,7 @@ export default function Home({ notes }) {
             </Button>
           </ul>
           <div className='px-4 lg:col-span-2'>
-            {selectedNote ? (
+            {(selectedNote && session) ? (
               <Note
                 note={notes.find((n) => n.id === selectedNote.id)}
                 index={notes.indexOf(
@@ -99,7 +108,7 @@ export default function Home({ notes }) {
                 )}
               />
             ) : (
-              <React.Fragment />
+              <div className='mt-10 text-2xl text-center'>Sign in to view and edit your notes!</div>
             )}
           </div>
 
@@ -113,10 +122,4 @@ export default function Home({ notes }) {
       </main>
     </div>
   );
-}
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const notes = await prisma.note.findMany({});
-  // NextJS cannot automatically parse the postgres DateTime type
-  return { props: { notes: JSON.parse(JSON.stringify(notes)) } };
 }

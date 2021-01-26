@@ -1,9 +1,9 @@
 import Button from './Button';
 import Image from 'next/image';
-import { useAuth } from '../lib/auth';
+import { signIn, signOut, useSession } from 'next-auth/client';
 
 export default function NavItems({ selectedNote }) {
-  const { signinWithGitHub } = useAuth();
+  const [session, loading] = useSession();
   return (
     <ul className='flex flex-col space-y-8 text-center'>
       <li>
@@ -35,11 +35,25 @@ export default function NavItems({ selectedNote }) {
           </Button>
         </a>
       </li>
-      <li>
-        <Button onClick={() => signinWithGitHub()} className='w-full'>
-          Sign In
-        </Button>
-      </li>
+      {!session ? (
+        <li>
+          <Button
+            onClick={() => {
+              console.log('clicked');
+              signIn();
+            }}
+            className='w-full'
+          >
+            Sign In
+          </Button>
+        </li>
+      ) : (
+        <li>
+          <Button className='w-full' onClick={() => signOut()}>
+            Log Out
+          </Button>
+        </li>
+      )}
     </ul>
   );
 }

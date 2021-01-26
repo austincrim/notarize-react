@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Note } from '../types/Note';
 import type { Note as INote } from '../types/Note';
 import Head from 'next/head';
-// import { useNotes } from './context/NotesContext';
 
 function NotePreview({ note, isSelected, ...props }) {
   const [displayDate, setDisplayDate] = React.useState(null);
@@ -14,7 +13,6 @@ function NotePreview({ note, isSelected, ...props }) {
     );
   }, [note]);
 
-  // const [notes, setNotes] = useNotes();
 
   return (
     <li

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import marked from 'marked';
 import Button from './Button';
-import { useNotes } from './context/NotesContext';
 import type {Note as INote} from '../types/Note'
 
 export default function Note({ note, index, ...props }) {
@@ -14,7 +13,6 @@ export default function Note({ note, index, ...props }) {
     );
   }, [note]);
   const [editing, setEditing] = React.useState(false);
-  const [notes, setNotes] = useNotes();
   const [editedNote, setEditedNote]: [INote, React.Dispatch<INote>] = React.useState({ ...note });
 
   React.useEffect(() => {
@@ -52,9 +50,8 @@ export default function Note({ note, index, ...props }) {
                 <Button
                   onClick={() => {
                     setEditing(false);
-                    let newNotes = [...notes];
-                    newNotes[index] = { ...editedNote };
-                    setNotes([...newNotes]);
+                  //   let newNotes = [...notes];
+                  //   newNotes[index] = { ...editedNote };
                   }}
                   type='primary'
                 >
