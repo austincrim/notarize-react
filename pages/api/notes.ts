@@ -12,6 +12,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case 'GET':
       result = await prisma.note.findMany({
+        orderBy: [
+          {
+            dateEdited: 'asc'
+          }
+        ],
         where: {
           author: { email: session?.user.email },
         },
@@ -38,6 +43,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         data,
       });
       break;
+      
     case 'DELETE':
       const { id } = req.body;
       result = await prisma.note.delete({

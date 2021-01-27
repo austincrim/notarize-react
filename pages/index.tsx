@@ -1,23 +1,24 @@
 import * as React from 'react';
 import Head from 'next/head';
 import { useSession } from 'next-auth/client';
-import { useMutation, useQueryClient } from 'react-query';
 import { useNotes } from '../components/hooks';
 import Nav from '../components/Nav';
 import MobileNav from '../components/MobileNav';
 import Button from '../components/Button';
 import NotePreview from '../components/NotePreview';
 import Note from '../components/Note';
-import Spinner from '../components/Spinner';
+import AddIcon from '../components/icons/AddIcon';
+import SearchInput from '../components/SearchInput';
+import Spinner from '../components/loading/Spinner';
 
 export default function Home() {
   const [searchText, setSearchText] = React.useState('');
-  const { notes, addMutation } = useNotes();
+  const { notes, status, addMutation } = useNotes();
   const [selectedNote, setSelectedNote] = React.useState(null);
   const [session] = useSession();
 
   React.useEffect(() => {
-    if (!notes) return;
+    if (status !== 'success') return;
     if (!notes[0]) {
       setSelectedNote(null);
     } else if (!notes.find((n) => n.id === selectedNote?.id)) {
@@ -34,17 +35,8 @@ export default function Home() {
         <MobileNav selectedNote={selectedNote} />
         <div className='grid min-h-screen grid-cols-1 p-8 lg:grid-cols-4 lg:gap-4'>
           <ul className='row-start-3 space-y-4 lg:pr-8 lg:row-start-auto lg:border-r'>
-            <label htmlFor='searchNotes' className='sr-only'>
-              Search Notes
-            </label>
-            <input
-              id='searchNotes'
-              className='w-full p-2 bg-gray-100 rounded focus:ring'
-              type='text'
-              placeholder='Search...'
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-            {notes ? (
+            <SearchInput setSearchText={setSearchText} />
+            {status === 'success' ? (
               notes
                 .filter((note) => note.title.toLowerCase().includes(searchText))
                 .map((note) => (
@@ -62,28 +54,20 @@ export default function Home() {
               disabled={!session}
               type='primary'
               className='flex justify-center w-full'
-              onClick={() => addMutation.mutate()}
+              onClick={() =>
+                addMutation.mutate({
+                  title: 'New Note',
+                  content: 'Write some Markdown here!',
+                })
+              }
             >
-              {addMutation.status !== 'loading' ? (
+              {addMutation.isLoading ? (
+                <Spinner />
+              ) : (
                 <span className='flex items-center justify-center'>
-                  <svg
-                    className='w-6 h-6'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                  >
-                    <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      strokeWidth='2'
-                      d='M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-                    />
-                  </svg>
+                  <AddIcon />
                   Add Note
                 </span>
-              ) : (
-                <Spinner />
               )}
             </Button>
           </ul>

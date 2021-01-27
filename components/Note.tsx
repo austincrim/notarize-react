@@ -2,6 +2,7 @@ import * as React from 'react';
 import marked from 'marked';
 import Button from './Button';
 import { useNotes } from './hooks';
+import NoteSkeleton from './loading/NoteSkeleton';
 
 export default function Note({ note, ...props }) {
   const [displayDate, setDisplayDate] = React.useState(null);
@@ -22,6 +23,15 @@ export default function Note({ note, ...props }) {
   React.useEffect(() => {
     setEditedNote({ ...editedNote, dateEdited: new Date().toISOString() });
   }, [editedNote.content, editedNote.title]);
+
+  if (saveMutation.isLoading) {
+    return (
+      <div className='p-2 space-y-6'>
+        <NoteSkeleton />
+        <NoteSkeleton />
+      </div>
+    )
+  }
 
   return (
     <>

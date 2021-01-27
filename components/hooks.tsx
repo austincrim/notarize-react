@@ -9,21 +9,18 @@ async function getNotes() {
   }
 }
 
-async function addNote() {
-  fetch('/api/notes', {
+async function addNote(note) {
+  await fetch('/api/notes', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      title: 'New Note',
-      content: 'Put Markdown here!',
-    }),
+    body: JSON.stringify(note),
   });
 }
 
 async function saveNote(note) {
-  fetch('/api/notes', {
+  await fetch('/api/notes', {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -34,11 +31,11 @@ async function saveNote(note) {
 
 async function deleteNote(id) {
   await fetch('/api/notes', {
-    body: JSON.stringify({ id }),
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify({ id }),
   });
 }
 
