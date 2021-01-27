@@ -45,6 +45,7 @@ export default function Home() {
                     note={note}
                     isSelected={selectedNote === note}
                     onClick={() => setSelectedNote(note)}
+                    onKeyDown={(e) => (e.code === 'Enter' || e.code === 'Space') ? setSelectedNote(note) : null}
                   />
                 ))
             ) : (

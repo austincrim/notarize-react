@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useMutation, useQueryClient } from 'react-query';
 import { useNotes } from './hooks';
 import Spinner from './loading/Spinner';
 import TrashIcon from './icons/TrashIcon';
@@ -18,7 +17,8 @@ function NotePreview({ note, isSelected, ...props }) {
 
   return (
     <li
-      className={`flex justify-between items-center gap-2 p-4 rounded ${
+      tabIndex={0}
+      className={`flex justify-between items-center gap-2 p-4 rounded focus:ring ${
         isSelected && 'bg-gray-200'
       } hover:bg-gray-200 active:bg-gray-300 transition-all duration-100`}
       {...props}
