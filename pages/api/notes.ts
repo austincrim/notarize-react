@@ -14,7 +14,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       result = await prisma.note.findMany({
         orderBy: [
           {
-            dateEdited: 'asc'
+            dateEdited: 'desc'
           }
         ],
         where: {

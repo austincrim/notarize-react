@@ -44,7 +44,7 @@ export default function NavItems({ selectedNote }) {
         </a>
       </li>
       <li>
-        <a href='https://github.com/austincrim/notarize'>
+        <a href='https://github.com/austincrim/notarize-react'>
           <Button
             className='w-full'
           >

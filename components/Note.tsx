@@ -43,7 +43,7 @@ export default function Note({ note, ...props }) {
             ) : (
               <input
                 className='p-2 bg-gray-100 rounded focus:ring'
-                defaultValue={note.title}
+                value={editedNote.title}
                 onChange={(e) =>
                   setEditedNote({ ...editedNote, title: e.target.value })
                 }
@@ -82,7 +82,7 @@ export default function Note({ note, ...props }) {
       )}
       {editing ? (
         <textarea
-          defaultValue={note.content}
+          value={editedNote.content}
           onChange={(e) =>
             setEditedNote({ ...editedNote, content: e.target.value })
           }
