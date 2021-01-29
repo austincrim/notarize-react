@@ -29,19 +29,6 @@ export default function MobileNav({ selectedNote }) {
         </h1>
       </div>
       <div className='flex items-center justify-between space-x-10'>
-        {session ? (
-          <div className='flex items-center space-x-3'>
-            <Image
-              className='rounded-full'
-              width='50'
-              height='50'
-              src={session.user.image}
-            />
-            <span className='text-lg text-gray-700'>{session?.user.name}</span>
-          </div>
-        ) : (
-          <React.Fragment />
-        )}
         <button className='focus:ring' onClick={() => setExpanded(!expanded)}>
           <svg
             className='w-8 h-8 text-gray-400'
